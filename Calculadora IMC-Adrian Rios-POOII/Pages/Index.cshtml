@@ -1,0 +1,318 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculadora de IMC</title>
+
+    <style>
+
+            /* Estilo general de la página */
+            body {
+                font-family: Arial;
+                text-align: center;
+                background-color: #f2f2f2;
+            }
+
+            /* Contenedor principal */
+            .calculadora {
+                width: 350px;
+                margin: 100px auto;
+                padding: 25px;
+                background-color: white;
+                border-radius: 10px;
+            }
+
+            /* Estilo de los campos */
+            input {
+                width: 90%;
+                padding: 10px;
+                margin: 8px;
+                box-sizing: border-box;
+            }
+
+            /* Estilo de los botones */
+            button {
+                padding: 10px 20px;
+                background-color: #333;
+                color: white;
+                border: none;
+                cursor: pointer;
+                margin: 5px;
+            }
+
+            /* Resultado del IMC */
+            #resultado {
+                margin-top: 20px;
+                padding: 15px;
+                border-radius: 8px;
+                font-weight: bold;
+            }
+
+            /* Tabla */
+            table {
+                width: 100%;
+                margin-top: 20px;
+                border-collapse: collapse;
+                font-size: 12px;
+            }
+
+            /* Celdas de la tabla */
+            th, td {
+                border: 1px solid black;
+                padding: 6px;
+                word-break: break-word;
+            }
+
+            /* Encabezados */
+            th {
+                background-color: #333;
+                color: white;
+            }
+
+            /* Total de IMC */
+            #totalIMC {
+                margin-top: 15px;
+                font-weight: bold;
+            }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- Formulario principal -->
+    <form class="calculadora" onsubmit="return false;">
+
+        <h2>Calculadora de IMC</h2>
+
+        <!-- Nombre -->
+        <p>Nombre:</p>
+        <input type="text" id="nombre"
+               placeholder="Ejemplo: Juan Pérez" required>
+
+        <!-- Peso -->
+        <p>Peso en kilogramos:</p>
+        <input type="number" id="peso"
+               placeholder="Ejemplo: 70" required>
+
+        <!-- Altura -->
+        <p>Altura en metros:</p>
+        <input type="number" id="altura"
+               placeholder="Ejemplo: 1.70" required>
+
+        <br><br>
+
+        <!-- Botón calcular -->
+        <button type="button" onclick="calcularIMC()">
+            Calcular IMC
+        </button>
+
+        <!-- Botón limpiar -->
+        <button type="button" onclick="limpiarCampos()">
+            Limpiar
+        </button>
+
+        <!-- Resultado -->
+        <div id="resultado"></div>
+
+        <h3>Registros</h3>
+
+        <!-- Tabla -->
+        <table>
+
+            <tr>
+                <th>Nombre</th>
+                <th>Peso</th>
+                <th>Altura</th>
+                <th>IMC</th>
+                <th>Resultado</th>
+            </tr>
+
+            <tbody id="tabla">
+            </tbody>
+
+        </table>
+
+        <!-- Aquí se muestra el IMC total -->
+        <div id="totalIMC">
+            IMC Total: 0
+        </div>
+
+        <br>
+
+        <!-- Botón borrar registros -->
+        <button type="button" onclick="borrarRegistros()">
+            Borrar registros
+        </button>
+
+    </form>
+
+
+    <script>
+
+            // Cuenta la cantidad de registros
+            var registros = 0;
+
+            // Guarda la suma de todos los IMC
+            var totalIMC = 0;
+
+
+            // Función para calcular el IMC
+            function calcularIMC() {
+
+                // Obtenemos los datos
+                var nombre = document.getElementById("nombre").value;
+                var peso = document.getElementById("peso").value;
+                var altura = document.getElementById("altura").value;
+
+
+                // Revisamos que los campos estén llenos
+                if (peso == "" || altura == "" || nombre == "") {
+
+                    alert("Por favor, llena todos los campos");
+
+                    return;
+                }
+
+
+                // Revisamos que no haya más de 10 registros
+                if (registros >= 10) {
+
+                    alert("Solo se permiten 10 registros");
+
+                    return;
+                }
+
+
+                // Calculamos el IMC
+                var imc = peso / (altura * altura);
+
+
+                // Sumamos el IMC al total
+                totalIMC = totalIMC + imc;
+
+
+                // Obtenemos el espacio del resultado
+                var resultado = document.getElementById("resultado");
+
+
+                // Guardamos el texto del resultado
+                var texto = "";
+
+
+                // Peso bajo
+                if (imc < 18.5) {
+
+                    texto = "Peso bajo";
+
+                    resultado.innerHTML = nombre +
+                    "<br>IMC: " + imc.toFixed(2) +
+                    "<br>Estas en un peso bajo";
+
+                    resultado.style.backgroundColor = "yellow";
+                    resultado.style.color = "black";
+
+                }
+
+
+                // Peso saludable
+                else if (imc < 25) {
+
+                    texto = "Peso saludable";
+
+                    resultado.innerHTML = nombre +
+                    "<br>IMC: " + imc.toFixed(2) +
+                    "<br>Estas en un peso saludable";
+
+                    resultado.style.backgroundColor = "green";
+                    resultado.style.color = "white";
+
+                }
+
+
+                // Sobrepeso
+                else {
+
+                    texto = "Sobrepeso";
+
+                    resultado.innerHTML = nombre +
+                    "<br>IMC: " + imc.toFixed(2) +
+                    "<br>Estas en sobrepeso";
+
+                    resultado.style.backgroundColor = "red";
+                    resultado.style.color = "white";
+                }
+
+
+                // Aumentamos el número de registros
+                registros++;
+
+
+                // Obtenemos la tabla
+                var tabla = document.getElementById("tabla");
+
+
+                // Creamos una nueva fila
+                var fila = tabla.insertRow();
+
+
+                // Agregamos los datos
+                fila.insertCell(0).innerHTML = nombre;
+                fila.insertCell(1).innerHTML = peso;
+                fila.insertCell(2).innerHTML = altura;
+                fila.insertCell(3).innerHTML = imc.toFixed(2);
+                fila.insertCell(4).innerHTML = texto;
+
+
+                // Mostramos el IMC total
+                document.getElementById("totalIMC").innerHTML =
+                    "IMC Total: " + totalIMC.toFixed(2);
+
+            }
+
+
+            // Función para limpiar los campos
+            function limpiarCampos() {
+
+                var resultado = document.getElementById("resultado");
+
+                resultado.innerHTML = "";
+
+                resultado.style.backgroundColor = "white";
+
+                document.getElementById("nombre").value = "";
+                document.getElementById("peso").value = "";
+                document.getElementById("altura").value = "";
+
+            }
+
+
+            // Función para borrar todos los registros
+            function borrarRegistros() {
+
+                // Borramos la tabla
+                document.getElementById("tabla").innerHTML = "";
+
+                // Reiniciamos los registros
+                registros = 0;
+
+                // Reiniciamos el total de IMC
+                totalIMC = 0;
+
+                // Mostramos nuevamente el total en 0
+                document.getElementById("totalIMC").innerHTML =
+                    "IMC Total: 0";
+
+            }
+
+    </script>
+
+</body>
+</html>
+
+
